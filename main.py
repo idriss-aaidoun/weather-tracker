@@ -1,7 +1,8 @@
 from weather import get_weather
-from ai_analysis import analyser_meteo
+from ai_analysis import analyser_meteo        # Groq
+from ai_local import analyser_meteo_local     # Ollama
 
-def afficher_meteo(ville):
+def afficher_meteo(ville, moteur="groq"):
     print(f"\n Recherche météo pour : {ville}")
     print("-" * 40)
     
@@ -17,34 +18,42 @@ def afficher_meteo(ville):
         
         print("\n Analyse IA :")
         print("-" * 40)
-        analyse = analyser_meteo(meteo)
+
+        if moteur == "local":
+            print(" Modèle : Ollama (local)")
+            analyse = analyser_meteo_local(meteo)
+        else:
+            print(" Modèle : Groq (cloud)")
+            analyse = analyser_meteo(meteo)
+
         print(analyse)
     else:
         print("Ville introuvable. Vérifie le nom.")
 
 def comparer_villes():
     villes = input("Entre les villes séparées par une virgule : ").split(",")
-    
     print(f"\n{'Ville':<20} {'Temp':>8} {'Humidité':>10} {'Vent':>8}")
     print("-" * 50)
-    
     for ville in villes:
         meteo = get_weather(ville.strip())
         if meteo:
             print(f"{meteo['ville']:<20} {meteo['temperature']:>7}°C {meteo['humidite']:>9}% {meteo['vent']:>6}m/s")
 
-# ← C'est ici que tout se décide
 if __name__ == "__main__":
     print("\n=== WEATHER TRACKER ===")
-    print("1 — Météo d'une ville")
-    print("2 — Comparer plusieurs villes")
-    
-    choix = input("\nTon choix (1 ou 2) : ")
-    
+    print("1 — Météo d'une ville (Groq)")
+    print("2 — Météo d'une ville (Ollama local)")
+    print("3 — Comparer plusieurs villes")
+
+    choix = input("\nTon choix : ")
+
     if choix == "1":
-        ville = input("Entre le nom d'une ville : ")
-        afficher_meteo(ville)
+        ville = input("Ville : ")
+        afficher_meteo(ville, moteur="groq")
     elif choix == "2":
+        ville = input("Ville : ")
+        afficher_meteo(ville, moteur="local")
+    elif choix == "3":
         comparer_villes()
     else:
         print("Choix invalide.")
