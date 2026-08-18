@@ -1,25 +1,17 @@
 import requests
 import json
+from prompts import build_prompt
 
 OLLAMA_URL = "http://localhost:11434/api/chat"
-MODEL = "llama3.2"  
+MODEL = "llama3.2"
 
 def analyser_meteo_local(meteo):
-    prompt = f"""
-    Voici les données météo actuelles pour {meteo['ville']} ({meteo['pays']}) :
-    - Température : {meteo['temperature']}°C
-    - Ressenti : {meteo['ressenti']}°C
-    - Humidité : {meteo['humidite']}%
-    - Ciel : {meteo['description']}
-    - Vent : {meteo['vent']} m/s
-
-    Donne une analyse courte et utile en 3 points :
+    prompt = build_prompt(meteo, """Donne une analyse courte et utile en 3 points :
     1. Comment est ce temps en général ?
     2. Que conseilles-tu de porter ou d'emporter ?
     3. Est-ce un bon moment pour sortir ?
 
-    Réponds en français, 4-5 lignes max.
-    """
+    Réponds en français, 4-5 lignes max.""")
 
     payload = {
         "model": MODEL,

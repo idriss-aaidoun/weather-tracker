@@ -38,6 +38,8 @@ def comparer_villes():
         meteo = get_weather(ville.strip())
         if meteo:
             print(f"{meteo['ville']:<20} {meteo['temperature']:>7}°C {meteo['humidite']:>9}% {meteo['vent']:>6}m/s")
+        else:
+            print(f"{ville.strip():<20} introuvable")
 
 if __name__ == "__main__":
     print("\n=== WEATHER TRACKER ===")
