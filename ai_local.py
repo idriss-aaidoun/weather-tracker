@@ -27,9 +27,15 @@ def analyser_meteo_local(meteo):
         "stream": False  # on veut la réponse complète d'un coup
     }
 
-    response = requests.post(OLLAMA_URL, json=payload)
+    try:
+        response = requests.post(OLLAMA_URL, json=payload, timeout=30)
+    except requests.exceptions.RequestException as e:
+        return f"Erreur Ollama : impossible de contacter le serveur local ({e})"
 
     if response.status_code == 200:
-        return response.json()["message"]["content"]
+        try:
+            return response.json()["message"]["content"]
+        except (KeyError, ValueError) as e:
+            return f"Erreur Ollama : réponse inattendue ({e})"
     else:
         return f"Erreur Ollama : {response.status_code}"

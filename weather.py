@@ -14,19 +14,27 @@ def get_weather(city):
         "units": "metric",  # Celsius
         "lang": "fr"
     }
-    
-    response = requests.get(BASE_URL, params=params)
-    
+
+    try:
+        response = requests.get(BASE_URL, params=params, timeout=10)
+    except requests.exceptions.RequestException as e:
+        print(f"Erreur réseau lors de la récupération de la météo : {e}")
+        return None
+
     if response.status_code == 200:
-        data = response.json()
-        return {
-            "ville": data["name"],
-            "pays": data["sys"]["country"],
-            "temperature": data["main"]["temp"],
-            "ressenti": data["main"]["feels_like"],
-            "humidite": data["main"]["humidity"],
-            "description": data["weather"][0]["description"],
-            "vent": data["wind"]["speed"]
-        }
+        try:
+            data = response.json()
+            return {
+                "ville": data["name"],
+                "pays": data["sys"]["country"],
+                "temperature": data["main"]["temp"],
+                "ressenti": data["main"]["feels_like"],
+                "humidite": data["main"]["humidity"],
+                "description": data["weather"][0]["description"],
+                "vent": data["wind"]["speed"]
+            }
+        except (KeyError, ValueError) as e:
+            print(f"Réponse météo inattendue : {e}")
+            return None
     else:
         return None
